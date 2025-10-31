@@ -1,0 +1,12 @@
+Oct 31, 2025 6:48:20 PM RealEstateAgent main
+INFO: Application started
+Oct 31, 2025 6:48:20 PM RealEstateAgent loadFromFile
+INFO: Loading data from file: Realestate.txt
+Oct 31, 2025 6:48:20 PM RealEstateAgent loadFromFile
+INFO: Data successfully loaded from file: Realestate.txt
+Oct 31, 2025 6:48:20 PM RealEstateAgent displayResults
+INFO: displayResults() called
+Oct 31, 2025 6:48:21 PM RealEstateAgent displayResults
+INFO: Results successfully written to outputRealEstate.txt
+Oct 31, 2025 6:48:21 PM RealEstateAgent main
+INFO: Application finished successfully

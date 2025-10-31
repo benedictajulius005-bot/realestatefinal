@@ -1,20 +1,64 @@
 import java.io.*;
 import java.util.*;
+import java.util.logging.*;
 
+/**
+ * The RealEstateAgent class handles reading real estate data from a file,
+ * storing them in a collection, performing calculations, and writing results to an output file.
+ * <p>
+ * It also includes logging to record events and exceptions into "realEstateApp.log".
+ */
 public class RealEstateAgent {
-    private static TreeSet<RealEstate> estates = new TreeSet<>();
 
-    public static void main(String[] args) {
-        loadFromFile("realestates.txt");
-        displayResults();
+    /** Logger instance for recording info and error messages */
+    private static final Logger logger = Logger.getLogger(RealEstateAgent.class.getName());
+
+    /** Collection of real estate properties */
+    private static final TreeSet<RealEstate> estates = new TreeSet<>();
+
+    // Static block to configure logging
+    static {
+        try {
+            FileHandler fileHandler = new FileHandler("realEstateApp.log", true);
+            fileHandler.setFormatter(new SimpleFormatter());
+            logger.addHandler(fileHandler);
+            logger.setLevel(Level.INFO);
+        } catch (IOException e) {
+            System.err.println("Failed to set up logger: " + e.getMessage());
+        }
     }
 
+    /**
+     * Main method that runs the program.
+     * Loads data from a file and displays the calculated results.
+     *
+     * @param args command line arguments (not used)
+     */
+    public static void main(String[] args) {
+        logger.info("Application started");
+        loadFromFile("Realestate.txt"); // ✅ matches your file name exactly
+        displayResults();
+        logger.info("Application finished successfully");
+    }
 
+    /**
+     * Returns all loaded real estates as a list.
+     *
+     * @return List of RealEstate objects
+     */
     public static List<RealEstate> getEstates() {
+        logger.info("getEstates() called");
         return new ArrayList<>(estates);
     }
 
+    /**
+     * Loads real estate data from a text file and adds them to the estates collection.
+     * Each line is split by "#" to extract data fields.
+     *
+     * @param filename the name of the file to load
+     */
     public static void loadFromFile(String filename) {
+        logger.info("Loading data from file: " + filename);
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -39,14 +83,25 @@ public class RealEstateAgent {
                     estates.add(new RealEstate(city, price, sqm, rooms, genre));
                 }
             }
+            logger.info("Data successfully loaded from file: " + filename);
         } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error reading file: " + filename, e);
             System.out.println("Error reading file, loading sample data...");
             estates.add(new RealEstate("Budapest", 250000, 100, 4, RealEstate.Genre.CONDOMINIUM));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error while loading data", e);
         }
     }
 
+    /**
+     * Displays calculated real estate statistics in the console
+     * and writes them to an output text file.
+     * Includes average prices, cheapest property, and condominiums below average price.
+     */
     public static void displayResults() {
+        logger.info("displayResults() called");
         try (PrintWriter writer = new PrintWriter(new FileWriter("outputRealEstate.txt"))) {
+
             double avgSqmPrice = estates.stream().mapToDouble(e -> e.price).average().orElse(0);
             int cheapest = estates.stream().mapToInt(RealEstate::getTotalPrice).min().orElse(0);
             Optional<RealEstate> budapestMostExpensive = estates.stream()
@@ -75,8 +130,10 @@ public class RealEstateAgent {
             System.out.println("Condominiums below avg price:");
             cheapCondos.forEach(System.out::println);
 
+            logger.info("Results successfully written to outputRealEstate.txt");
+
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error writing to outputRealEstate.txt", e);
         }
     }
 }
